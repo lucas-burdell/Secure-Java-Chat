@@ -93,6 +93,8 @@ public class ChatController implements Initializable {
         connection.setReceiverCallback(new Runnable() {
             @Override
             public void run() {
+                System.out.println("Beginning to listen");
+                System.out.println("connection is closed?: " + connection.getClientConnection().isClosed());
                 while (!connection.getClientConnection().isClosed()) {
                     String data = connection.getMessage();
                     Platform.runLater(new Runnable() {
