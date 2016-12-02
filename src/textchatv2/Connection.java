@@ -387,7 +387,7 @@ public class Connection {
                         byte[] message = messages.pollFirst();
                         Connection.this.send(message);
                         try {
-                            Thread.sleep(500);
+                            Thread.sleep(250);
                         } catch (InterruptedException ex) {
                             Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                         }
