@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayDeque;
 import java.util.Optional;
 import java.util.Random;
 import java.util.logging.Level;
@@ -43,6 +44,12 @@ public class Connection {
 
     // boolean set to true when keys successfuly exchanged
     private boolean connectionEstablished = false;
+
+    private Boolean isSending = false;
+
+    private ArrayDeque<byte[]> messages = new ArrayDeque<>();
+    private Thread senderThread;
+    
 
     //from http://stackoverflow.com/questions/4582277/biginteger-powbiginteger
     public final BigInteger repeatedSquaring(BigInteger base, BigInteger exponent, BigInteger modulus) {
@@ -100,19 +107,22 @@ public class Connection {
         this.setConnectionEstablished(true);
         MainApplication.getApplication().startChatGui(this);
     }
-
+    
     public void sendMessage(byte[] message) {
+        messages.addLast(message);
+    }
+
+    private void send(byte[] message) {
         try {
-            PrintWriter writer = new PrintWriter(this.getClientConnection().getOutputStream());
+            PrintWriter writer = new PrintWriter(Connection.this.getClientConnection().getOutputStream());
             writer.println(message.length);
             writer.flush();
-            this.getClientConnection().getOutputStream().write(message);
-            this.getClientConnection().getOutputStream().flush();
+            Connection.this.getClientConnection().getOutputStream().write(message);
+            Connection.this.getClientConnection().getOutputStream().flush();
             System.out.println("sending: " + message);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
     }
 
     public byte[] getMessage() {
@@ -130,7 +140,7 @@ public class Connection {
             return data;
 
         } catch (IOException ex) {
-           ex.printStackTrace();
+            ex.printStackTrace();
         }
         return null;
     }
@@ -369,5 +379,23 @@ public class Connection {
             listener.setDaemon(true);
             listener.start();
         }
+        this.senderThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!Connection.this.getClientConnection().isClosed()) {
+                    if (!messages.isEmpty()) {
+                        byte[] message = messages.pollFirst();
+                        Connection.this.send(message);
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+            }
+        });
+        senderThread.setDaemon(true);
+        senderThread.start();
     }
 }
