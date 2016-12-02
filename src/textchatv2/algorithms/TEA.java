@@ -130,47 +130,48 @@ public class TEA extends SecuritySolution {
     }
 
     public static BigInteger[][] chopString(String text) {
-
+        
+        byte[] data = text.getBytes();
         ArrayList<BigInteger[]> list = new ArrayList<>();
-        int remainder = text.length() % 8;
-        for (int i = 0; i < text.length() - remainder; i += 8) {
-            byte[] leftBytes = new byte[]{(byte) text.charAt(i),
-                (byte) text.charAt(i + 1), (byte) text.charAt(i + 2),
-                (byte) text.charAt(i + 3)};
+        int remainder = data.length % 8;
+        for (int i = 0; i < data.length - remainder; i += 8) {
+            byte[] leftBytes = new byte[]{data[i],
+                data[i + 1], data[i + 2],
+                data[i + 3]};
             BigInteger left = new BigInteger(leftBytes);
 
-            byte[] rightBytes = new byte[]{(byte) text.charAt(i + 4),
-                (byte) text.charAt(i + 5), (byte) text.charAt(i + 6),
-                (byte) text.charAt(i + 7)};
+            byte[] rightBytes = new byte[]{data[i + 4],
+               data[i + 5], data[i + 6],
+                data[i + 7]};
             BigInteger right = new BigInteger(rightBytes);
-            //System.out.println("" + text.charAt(i + 4) + text.charAt(i + 5) + text.charAt(i + 6) + text.charAt(i + 7));
+            //System.out.println("" + data.charAt(i + 4) + data.charAt(i + 5) + data.charAt(i + 6) + data.charAt(i + 7));
             list.add(new BigInteger[]{left, right});
         }
 
-        int start = text.length() - remainder;
-
+        int start = data.length - remainder;
+        
         if (remainder != 0) {
 
             if (remainder > 4) {
-                byte[] leftBytes = new byte[]{(byte) text.charAt(start),
-                    (byte) text.charAt(start + 1), (byte) text.charAt(start + 2),
-                    (byte) text.charAt(start + 3)};
+                byte[] leftBytes = new byte[]{data[start],
+                    data[start + 1], data[start + 2],
+                    data[start + 3]};
                 BigInteger left = new BigInteger(leftBytes);
                 BigInteger right;
                 start = start + 4;
-                byte[] rightBytes = new byte[text.length() - start];
+                byte[] rightBytes = new byte[data.length - start];
 
-                for (int i = 0; i < text.length() - start; i++) {
-                    rightBytes[i] = (byte) text.charAt(start + i);
+                for (int i = 0; i < data.length - start; i++) {
+                    rightBytes[i] = (byte) data[start + i];
                 }
 
                 right = new BigInteger(rightBytes);
                 list.add(new BigInteger[]{left, right});
             } else {
                 BigInteger left;
-                byte[] leftBytes = new byte[text.length() - start];
-                for (int i = 0; i < text.length() - start; i++) {
-                    leftBytes[i] = (byte) text.charAt(start + i);
+                byte[] leftBytes = new byte[data.length - start];
+                for (int i = 0; i < data.length - start; i++) {
+                    leftBytes[i] = (byte) data[start + i];
                 }
                 left = new BigInteger(leftBytes);
                 list.add(new BigInteger[]{left, BigInteger.ZERO});
