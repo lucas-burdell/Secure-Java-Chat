@@ -1,7 +1,13 @@
 package textchatv2;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -27,19 +33,19 @@ public class ChatController implements Initializable {
     private TextFlow textflow;
     @FXML
     private TextField texttemplate;
-    
+
     private Connection connection;
-    
+
     private SecuritySolution securitySolution;
-    
+
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+
     }
-    
+
     private Text createText(String content, boolean sending) {
         Color textColor = sending ? Color.GREEN : Color.BLUE;
         content = (sending ? "You: " : "Them: ") + content;
@@ -47,7 +53,7 @@ public class ChatController implements Initializable {
         text.setFill(textColor);
         return text;
     }
-    
+
     private void showText(String content, boolean sending) {
         Color textColor = sending ? Color.GREEN : Color.BLUE;
         content = (sending ? "You: " : "Them: ") + content;
@@ -59,16 +65,26 @@ public class ChatController implements Initializable {
         scrollpane.layout();
         scrollpane.setVvalue(scrollpane.getVmax());
     }
-    
-    
+
     @FXML
     private void sendText(ActionEvent event) {
         String textToSend = textbox.getText();
-        // do something with it
-        // byte[] ciphertext = encrypt(textToSend) : encrypt the text
-        // connection.send(ciphertext) : send the ciphertext
-        // show(textToSend)  : show text we sent on our screen as "You: " + text
+        byte[] message = this.securitySolution.startEncryption(textToSend);
+        String sendMessage = new String(message);
+        this.connection.sendMessage(sendMessage);
+        showText(textToSend, true);
         
+
+// do something with it
+                // byte[] ciphertext = encrypt(textToSend) : encrypt the text
+                // connection.send(ciphertext) : send the ciphertext
+                // show(textToSend)  : show text we sent on our screen as "You: " + text
+
+    }
+
+    private void receiveText(String data) {
+        String message = this.securitySolution.startDecryption(data.getBytes());
+        showText(message, false);
     }
 
     /**
@@ -84,6 +100,22 @@ public class ChatController implements Initializable {
     public void setConnection(Connection connection) {
         this.connection = connection;
         this.securitySolution = SecuritySuite.getSecuritySolution(0, connection.getPrivateNumber().toByteArray());
+        connection.setReceiverCallback(new Runnable() {
+            @Override
+            public void run() {
+                while (!connection.getClientConnection().isClosed()) {
+                    String data = connection.getMessage();
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            receiveText(data);
+                        }
+
+                    });
+                }
+            }
+
+        });
+
     }
-    
 }

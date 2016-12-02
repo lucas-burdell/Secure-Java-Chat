@@ -39,7 +39,7 @@ public class Connection {
     private BigInteger publicNumber;
 
     // runnable to call when data received after initial setup (i.e. messages)
-    private Runnable receiverCallback;
+    private Runnable receiverThread;
 
     // boolean set to true when keys successfuly exchanged
     private boolean connectionEstablished = false;
@@ -100,8 +100,32 @@ public class Connection {
         this.setConnectionEstablished(true);
         MainApplication.getApplication().startChatGui(this);
     }
+    
+    public void sendMessage(String message) {
+        try {
+            PrintWriter writer = new PrintWriter(this.getClientConnection().getOutputStream());
+            writer.println(message);
+        } catch (IOException ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
 
+    public String getMessage() {
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader(
+                    new InputStreamReader(
+                            this.getClientConnection().getInputStream()));
+            return in.readLine();
+            
+        } catch (IOException ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
     //start the key transfer to the server
+
     private boolean startTransfer() {
         // try-with-resources can't catch implicit IOException on close() method
         // of stream, so you need the catch clause
@@ -319,7 +343,7 @@ public class Connection {
      * @return the receiverCallback
      */
     public Runnable getReceiverCallback() {
-        return receiverCallback;
+        return receiverThread;
     }
 
     /**
@@ -327,7 +351,7 @@ public class Connection {
      */
     public void setReceiverCallback(Runnable receiverCallback) {
         if (receiverCallback == null) {
-            this.receiverCallback = receiverCallback;
+            this.receiverThread = receiverCallback;
             Thread listener = new Thread(receiverCallback);
             listener.setDaemon(true);
             listener.start();
