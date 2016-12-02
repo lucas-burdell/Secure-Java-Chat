@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="textchatv2.ChatController">
+   <bottom>
+      <HBox alignment="TOP_CENTER" prefHeight="77.0" prefWidth="600.0" spacing="10.0" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER">
+         <children>
+            <TextField fx:id="textbox" prefHeight="25.0" prefWidth="332.0">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </TextField>
+            <Button mnemonicParsing="false" onAction="#sendText" text="Send">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Button>
+         </children>
+      </HBox>
+   </bottom>
+   <center>
+      <ScrollPane fx:id="scrollpane" focusTraversable="false" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" vvalue="1.0" BorderPane.alignment="CENTER">
+         <content>
+            <TextFlow fx:id="textflow" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mouseTransparent="true" pickOnBounds="false" style="-fx-background-color: transparent;" />
+         </content>
+      </ScrollPane>
+   </center>
+</BorderPane>

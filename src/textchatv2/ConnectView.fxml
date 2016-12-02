@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="textchatv2.ConnectViewController">
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+   <top>
+      <VBox prefHeight="175.0" prefWidth="560.0" BorderPane.alignment="CENTER">
+         <children>
+            <TextField editable="false" focusTraversable="false" mouseTransparent="true" pickOnBounds="false" style="-fx-text-box-border: transparent; -fx-background-color: transparent;" text="Choose an encryption algorithm:">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </TextField>
+            <RadioButton mnemonicParsing="false" selected="true" text="None [UNSECURE!]">
+               <toggleGroup>
+                  <ToggleGroup fx:id="algorithms" />
+               </toggleGroup>
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </RadioButton>
+            <RadioButton mnemonicParsing="false" text="RC4" toggleGroup="$algorithms">
+               <VBox.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </VBox.margin>
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </RadioButton>
+            <RadioButton mnemonicParsing="false" text="TEA" toggleGroup="$algorithms">
+               <VBox.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </VBox.margin>
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </RadioButton>
+         </children>
+      </VBox>
+   </top>
+   <center>
+      <HBox alignment="TOP_CENTER" prefHeight="119.0" prefWidth="560.0" spacing="25.0" BorderPane.alignment="CENTER">
+         <children>
+            <TextField fx:id="ipbox" promptText="Enter IP here">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </TextField>
+            <Button mnemonicParsing="false" onAction="#onConnect" text="Connect">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Button>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+      </HBox>
+   </center>
+</BorderPane>
