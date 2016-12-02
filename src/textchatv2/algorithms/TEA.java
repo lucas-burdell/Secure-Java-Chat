@@ -6,6 +6,7 @@
 package textchatv2.algorithms;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import textchatv2.SecuritySolution;
 
 /**
@@ -16,17 +17,37 @@ public class TEA extends SecuritySolution {
 
     @Override
     public String startDecryption(byte[] data) {
+        BigInteger[][] chopped = chopString(new String(data));
+        BigInteger[] bigKey = new BigInteger[4];
+        byte[] key = this.getKey();
+        for (int i = 0; i < bigKey.length; i++) {
+            int position = i * 4;
+            bigKey[i] = new BigInteger(new byte[]{key[position],
+                key[position + 1], key[position + 2], key[position + 3]});
+        }
+        for (int i = 0; i < chopped.length; i++) {
+            decrypt(chopped[i], bigKey);
+        }
 
         // TODO: DECODE TEA
-        return new String(data);
+        return unChopString(chopped);
     }
 
     @Override
     public byte[] startEncryption(String data) {
+        BigInteger[][] chopped = chopString(data);
+        BigInteger[] bigKey = new BigInteger[4];
+        byte[] key = this.getKey();
+        for (int i = 0; i < bigKey.length; i++) {
+            int position = i * 4;
+            bigKey[i] = new BigInteger(new byte[]{key[position],
+                key[position + 1], key[position + 2], key[position + 3]});
+        }
+        for (int i = 0; i < chopped.length; i++) {
+            encrypt(chopped[i], bigKey);
+        }
 
-        //byte[] encoded = new byte[data.length];
-        // TODO: ENCODE TEA
-        return data.getBytes();
+        return unChopString(chopped).getBytes();
     }
 
     public String unChopString(BigInteger[][] input) {
@@ -101,6 +122,56 @@ public class TEA extends SecuritySolution {
         }
         v[0] = v0;
         v[1] = v1;
+    }
+
+    public static BigInteger[][] chopString(String text) {
+
+        ArrayList<BigInteger[]> list = new ArrayList<>();
+        int remainder = text.length() % 8;
+        for (int i = 0; i < text.length() - remainder; i += 8) {
+            byte[] leftBytes = new byte[]{(byte) text.charAt(i),
+                (byte) text.charAt(i + 1), (byte) text.charAt(i + 2),
+                (byte) text.charAt(i + 3)};
+            BigInteger left = new BigInteger(leftBytes);
+
+            byte[] rightBytes = new byte[]{(byte) text.charAt(i + 4),
+                (byte) text.charAt(i + 5), (byte) text.charAt(i + 6),
+                (byte) text.charAt(i + 7)};
+            BigInteger right = new BigInteger(rightBytes);
+            //System.out.println("" + text.charAt(i + 4) + text.charAt(i + 5) + text.charAt(i + 6) + text.charAt(i + 7));
+            list.add(new BigInteger[]{left, right});
+        }
+
+        int start = text.length() - remainder;
+
+        if (remainder != 0) {
+
+            if (remainder > 4) {
+                byte[] leftBytes = new byte[]{(byte) text.charAt(start),
+                    (byte) text.charAt(start + 1), (byte) text.charAt(start + 2),
+                    (byte) text.charAt(start + 3)};
+                BigInteger left = new BigInteger(leftBytes);
+                BigInteger right;
+                start = start + 4;
+                byte[] rightBytes = new byte[text.length() - start];
+
+                for (int i = 0; i < text.length() - start; i++) {
+                    rightBytes[i] = (byte) text.charAt(start + i);
+                }
+
+                right = new BigInteger(rightBytes);
+                list.add(new BigInteger[]{left, right});
+            } else {
+                BigInteger left;
+                byte[] leftBytes = new byte[text.length() - start];
+                for (int i = 0; i < text.length() - start; i++) {
+                    leftBytes[i] = (byte) text.charAt(start + i);
+                }
+                left = new BigInteger(leftBytes);
+                list.add(new BigInteger[]{left, BigInteger.ZERO});
+            }
+        }
+        return list.toArray(new BigInteger[list.size()][]);
     }
 
 }
