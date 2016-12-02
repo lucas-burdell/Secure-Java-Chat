@@ -106,7 +106,7 @@ public class Connection {
             PrintWriter writer = new PrintWriter(this.getClientConnection().getOutputStream());
             writer.println(message);
         } catch (IOException ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
 
     }
@@ -120,7 +120,7 @@ public class Connection {
             return in.readLine();
 
         } catch (IOException ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+           ex.printStackTrace();
         }
         return null;
     }

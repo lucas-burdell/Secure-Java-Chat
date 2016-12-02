@@ -48,7 +48,11 @@ public class MainApplication extends Application {
                 FXMLLoader fxmlLoader = new FXMLLoader();
                 Pane p = fxmlLoader.load(MainApplication.class.getResourceAsStream("Chat.fxml"));
                 ChatController controller = (ChatController) fxmlLoader.getController();
-                controller.setConnection(connection);
+                controller.setConnection(connection, 
+                        SecuritySuite.getSecuritySolution(
+                                connection.getAlgorithm(), 
+                                connection.getSharedSecret().toByteArray()));
+                
                 Stage stage = new Stage();
                 stage.setScene(new Scene(p));
                 stage.setTitle(connection.getClientConnection().getInetAddress().toString());

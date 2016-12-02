@@ -46,18 +46,10 @@ public class ChatController implements Initializable {
 
     }
 
-    private Text createText(String content, boolean sending) {
-        Color textColor = sending ? Color.GREEN : Color.BLUE;
-        content = (sending ? "You: " : "Them: ") + content;
-        Text text = new Text(content);
-        text.setFill(textColor);
-        return text;
-    }
-
     private void showText(String content, boolean sending) {
         Color textColor = sending ? Color.GREEN : Color.BLUE;
         content = (sending ? "You: " : "Them: ") + content;
-        Text text = new Text(content);
+        Text text = new Text(content + "\n");
         text.setFont(new Font(14));
         text.setFill(textColor);
         textflow.getChildren().add(text);
@@ -94,12 +86,10 @@ public class ChatController implements Initializable {
         return connection;
     }
 
-    /**
-     * @param connection the connection to set
-     */
-    public void setConnection(Connection connection) {
+
+    public void setConnection(Connection connection, SecuritySolution securitySolution) {
         this.connection = connection;
-        this.securitySolution = SecuritySuite.getSecuritySolution(0, connection.getPrivateNumber().toByteArray());
+        this.securitySolution = securitySolution;
         connection.setReceiverCallback(new Runnable() {
             @Override
             public void run() {
