@@ -3,6 +3,7 @@ package textchatv2;
 import java.io.IOException;
 import java.util.Scanner;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -34,23 +35,32 @@ public class MainApplication extends Application {
     
 
     public void startChatGui(Connection connection) {
-
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            Pane p = fxmlLoader.load(MainApplication.class.getResourceAsStream("Chat.fxml"));
-            ChatController fooController = (ChatController) fxmlLoader.getController();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(p));
-            stage.setTitle(connection.getClientConnection().getInetAddress().toString());
-            stage.show();
-            //throw new IOException();
-        } catch (IOException ioe) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Problems");
-            alert.setContentText("A problem occured opening a chat window for "
-                    + connection.getClientConnection().getInetAddress());
-            alert.show();
-            ioe.printStackTrace();
+        
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    startChatGui(connection); 
+               }
+            });
+        } else {
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader();
+                Pane p = fxmlLoader.load(MainApplication.class.getResourceAsStream("Chat.fxml"));
+                ChatController fooController = (ChatController) fxmlLoader.getController();
+                Stage stage = new Stage();
+                stage.setScene(new Scene(p));
+                stage.setTitle(connection.getClientConnection().getInetAddress().toString());
+                stage.show();
+                //throw new IOException();
+            } catch (IOException ioe) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Problems");
+                alert.setContentText("A problem occured opening a chat window for "
+                        + connection.getClientConnection().getInetAddress());
+                alert.show();
+                ioe.printStackTrace();
+            }
         }
     }
 
