@@ -19,13 +19,8 @@ import textchatv2.SecuritySolution;
 public class TEA extends SecuritySolution {
 
     @Override
-    public String startDecryption(byte[] data) {
-        BigInteger[][] chopped = null;
-        try {
-            chopped = chopString(new String(data, "UTF-8"));
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(TEA.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public String startDecryption(String data) {
+        BigInteger[][] chopped = chopString(data);
         BigInteger[] bigKey = new BigInteger[4];
         byte[] key = this.getKey();
         for (int i = 0; i < bigKey.length; i++) {
@@ -42,7 +37,7 @@ public class TEA extends SecuritySolution {
     }
 
     @Override
-    public byte[] startEncryption(String data) {
+    public String startEncryption(String data) {
         BigInteger[][] chopped = chopString(data);
         BigInteger[] bigKey = new BigInteger[4];
         byte[] key = this.getKey();
@@ -56,7 +51,7 @@ public class TEA extends SecuritySolution {
             encrypt(chopped[i], bigKey);
         }
 
-        return unChopString(chopped).getBytes();
+        return unChopString(chopped);
     }
 
     public String unChopString(BigInteger[][] input) {

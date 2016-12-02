@@ -61,9 +61,8 @@ public class ChatController implements Initializable {
     @FXML
     private void sendText(ActionEvent event) {
         String textToSend = textbox.getText();
-        byte[] message = this.securitySolution.startEncryption(textToSend);
-        String sendMessage = new String(message);
-        this.connection.sendMessage(sendMessage);
+        String message = this.securitySolution.startEncryption(textToSend);
+        this.connection.sendMessage(message);
         showText(textToSend, true);
         
 
@@ -77,7 +76,7 @@ public class ChatController implements Initializable {
     private void receiveText(String data) {
         System.out.println("RECEIVING " + data);
         System.out.println("SECURITY: " + this.securitySolution);
-        String message = this.securitySolution.startDecryption(data.getBytes());
+        String message = this.securitySolution.startDecryption(data);
         showText(message, false);
     }
 
