@@ -52,9 +52,9 @@ public class ClientHandler implements Runnable {
                                 Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
+                        lockAndWait.notifyAll();
                     }
-                    
-                    lockAndWait.notifyAll();
+
                 }
             });
 
