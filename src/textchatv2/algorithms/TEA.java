@@ -5,8 +5,11 @@
  */
 package textchatv2.algorithms;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import textchatv2.SecuritySolution;
 
 /**
@@ -17,7 +20,12 @@ public class TEA extends SecuritySolution {
 
     @Override
     public String startDecryption(byte[] data) {
-        BigInteger[][] chopped = chopString(new String(data));
+        BigInteger[][] chopped = null;
+        try {
+            chopped = chopString(new String(data, "UTF-8"));
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(TEA.class.getName()).log(Level.SEVERE, null, ex);
+        }
         BigInteger[] bigKey = new BigInteger[4];
         byte[] key = this.getKey();
         for (int i = 0; i < bigKey.length; i++) {
