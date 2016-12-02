@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -33,15 +34,28 @@ public class ClientHandler implements Runnable {
                 = new PrintWriter(clientSocket.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(clientSocket.getInputStream()));) {
-            
-            Alert alert = new Alert(AlertType.CONFIRMATION);
-                        alert.setTitle("Incoming from " + clientSocket.getInetAddress());
-                        alert.setContentText("Connection from " + clientSocket.getInetAddress() + ". Accept?");
-                        Optional<ButtonType> alertResult = alert.showAndWait();
-                        if (alertResult.isPresent() && alertResult.get() != ButtonType.OK) {
+
+            Boolean lockAndWait = true;
+
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    Alert alert = new Alert(AlertType.CONFIRMATION);
+                    alert.setTitle("Incoming from " + clientSocket.getInetAddress());
+                    alert.setContentText("Connection from " + clientSocket.getInetAddress() + ". Accept?");
+                    Optional<ButtonType> alertResult = alert.showAndWait();
+                    if (alertResult.isPresent() && alertResult.get() != ButtonType.OK) {
+                        try {
                             clientSocket.close();
-                            return;
+                        } catch (IOException ex) {
+                            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                    }
+                    lockAndWait.notifyAll();
+                }
+            });
+
+            lockAndWait.wait(1000);
             System.out.println("Connection received from " + clientSocket.getInetAddress());
             String input = in.readLine();
             System.out.println("input: " + input);
@@ -60,7 +74,7 @@ public class ClientHandler implements Runnable {
             clientSocket.getInputStream().read(publicBytes);
             BigInteger receivedPublic = new BigInteger(publicBytes);
             //System.out.println("received public: " + receivedPublic);
-            
+
             System.out.println("received public size: " + publicSize);
 
             Connection connection = new Connection(clientSocket, algorithm, new BigInteger(publicBytes));
@@ -69,6 +83,8 @@ public class ClientHandler implements Runnable {
 
         } catch (IOException ex) {
             Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
