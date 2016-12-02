@@ -13,9 +13,9 @@ public abstract class SecuritySolution {
 
     private byte[] key;
 
-    public abstract String startDecryption(String data);
+    public abstract String startDecryption(byte[] data);
 
-    public abstract String startEncryption(String data);
+    public abstract byte[] startEncryption(String data);
 
     /**
      * @return the key

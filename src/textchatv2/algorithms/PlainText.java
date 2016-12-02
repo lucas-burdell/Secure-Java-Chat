@@ -14,13 +14,13 @@ import textchatv2.SecuritySolution;
 public class PlainText extends SecuritySolution {
 
     @Override
-    public String startDecryption(String data) {
-        return data;
+    public String startDecryption(byte[] data) {
+        return new String(data);
     }
 
     @Override
-    public String startEncryption(String data) {
-        return data;
+    public byte[] startEncryption(String data) {
+        return data.getBytes();
     }
 
 }

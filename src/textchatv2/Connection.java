@@ -101,11 +101,13 @@ public class Connection {
         MainApplication.getApplication().startChatGui(this);
     }
 
-    public void sendMessage(String message) {
+    public void sendMessage(byte[] message) {
         try {
             PrintWriter writer = new PrintWriter(this.getClientConnection().getOutputStream());
-            writer.println(message);
+            writer.println(message.length);
             writer.flush();
+            this.getClientConnection().getOutputStream().write(message);
+            this.getClientConnection().getOutputStream().flush();
             System.out.println("sending: " + message);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -113,15 +115,18 @@ public class Connection {
 
     }
 
-    public String getMessage() {
+    public byte[] getMessage() {
         System.out.println("Waiting to receive...");
         BufferedReader in = null;
         try {
             in = new BufferedReader(
                     new InputStreamReader(
                             this.getClientConnection().getInputStream()));
-            String data = in.readLine();
-            System.out.println("received: " + data);
+            String dataSize = in.readLine();
+            int size = Integer.parseInt(dataSize);
+            System.out.println("received size: " + dataSize);
+            byte[] data = new byte[size];
+            this.getClientConnection().getInputStream().read(data);
             return data;
 
         } catch (IOException ex) {

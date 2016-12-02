@@ -61,7 +61,7 @@ public class ChatController implements Initializable {
     @FXML
     private void sendText(ActionEvent event) {
         String textToSend = textbox.getText();
-        String message = this.securitySolution.startEncryption(textToSend);
+        byte[] message = this.securitySolution.startEncryption(textToSend);
         this.connection.sendMessage(message);
         showText(textToSend, true);
         
@@ -73,7 +73,7 @@ public class ChatController implements Initializable {
 
     }
 
-    private void receiveText(String data) {
+    private void receiveText(byte[] data) {
         System.out.println("RECEIVING " + data);
         System.out.println("SECURITY: " + this.securitySolution);
         String message = this.securitySolution.startDecryption(data);
@@ -97,7 +97,7 @@ public class ChatController implements Initializable {
                 System.out.println("Beginning to listen");
                 System.out.println("connection is closed?: " + connection.getClientConnection().isClosed());
                 while (!connection.getClientConnection().isClosed()) {
-                    String data = connection.getMessage();
+                    byte[] data = connection.getMessage();
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {

@@ -19,8 +19,8 @@ import textchatv2.SecuritySolution;
 public class TEA extends SecuritySolution {
 
     @Override
-    public String startDecryption(String data) {
-        BigInteger[][] chopped = chopString(data);
+    public String startDecryption(byte[] data) {
+        BigInteger[][] chopped = chop(data);
         BigInteger[] bigKey = new BigInteger[4];
         byte[] key = this.getKey();
         for (int i = 0; i < bigKey.length; i++) {
@@ -38,7 +38,7 @@ public class TEA extends SecuritySolution {
     }
 
     @Override
-    public String startEncryption(String data) {
+    public byte[] startEncryption(String data) {
         BigInteger[][] chopped = chopString(data);
         BigInteger[] bigKey = new BigInteger[4];
         byte[] key = this.getKey();
@@ -52,7 +52,26 @@ public class TEA extends SecuritySolution {
             encrypt(chopped[i], bigKey);
         }
 
-        return unChopString(chopped);
+        return bigPairsToBytes(chopped);
+    }
+    
+    public byte[] bigPairsToBytes(BigInteger[][] bigs) {
+        ArrayList<Byte> bytes = new ArrayList<>();
+        for (int i = 0; i < bigs.length; i++) {
+            for (int j = 0; j < bigs[i].length; j++) {
+                byte[] bigBytes = bigs[i][j].toByteArray();
+                for (int k = 0; k < bigBytes.length; k++) {
+                    bytes.add(bigBytes[k]);
+                }
+            }
+        }
+        
+        byte[] byteOutput = new byte[bytes.size()];
+        int index = 0;
+        for (Byte b : bytes) {
+            byteOutput[index++] = b;
+        }
+        return byteOutput;
     }
 
     public String unChopString(BigInteger[][] input) {
@@ -129,9 +148,7 @@ public class TEA extends SecuritySolution {
         v[1] = v1;
     }
 
-    public static BigInteger[][] chopString(String text) {
-        
-        byte[] data = text.getBytes();
+    public static BigInteger[][] chop(byte[] data) {
         ArrayList<BigInteger[]> list = new ArrayList<>();
         int remainder = data.length % 8;
         for (int i = 0; i < data.length - remainder; i += 8) {
@@ -141,7 +158,7 @@ public class TEA extends SecuritySolution {
             BigInteger left = new BigInteger(leftBytes);
 
             byte[] rightBytes = new byte[]{data[i + 4],
-               data[i + 5], data[i + 6],
+                data[i + 5], data[i + 6],
                 data[i + 7]};
             BigInteger right = new BigInteger(rightBytes);
             //System.out.println("" + data.charAt(i + 4) + data.charAt(i + 5) + data.charAt(i + 6) + data.charAt(i + 7));
@@ -149,7 +166,7 @@ public class TEA extends SecuritySolution {
         }
 
         int start = data.length - remainder;
-        
+
         if (remainder != 0) {
 
             if (remainder > 4) {
@@ -178,6 +195,12 @@ public class TEA extends SecuritySolution {
             }
         }
         return list.toArray(new BigInteger[list.size()][]);
+    }
+
+    public static BigInteger[][] chopString(String text) {
+
+        byte[] data = text.getBytes();
+        return chop(data);
     }
 
 }
