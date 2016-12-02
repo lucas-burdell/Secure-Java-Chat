@@ -40,22 +40,27 @@ public class ClientHandler implements Runnable {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    Alert alert = new Alert(AlertType.CONFIRMATION);
-                    alert.setTitle("Incoming from " + clientSocket.getInetAddress());
-                    alert.setContentText("Connection from " + clientSocket.getInetAddress() + ". Accept?");
-                    Optional<ButtonType> alertResult = alert.showAndWait();
-                    if (alertResult.isPresent() && alertResult.get() != ButtonType.OK) {
-                        try {
-                            clientSocket.close();
-                        } catch (IOException ex) {
-                            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    synchronized (lockAndWait) {
+                        Alert alert = new Alert(AlertType.CONFIRMATION);
+                        alert.setTitle("Incoming from " + clientSocket.getInetAddress());
+                        alert.setContentText("Connection from " + clientSocket.getInetAddress() + ". Accept?");
+                        Optional<ButtonType> alertResult = alert.showAndWait();
+                        if (alertResult.isPresent() && alertResult.get() != ButtonType.OK) {
+                            try {
+                                clientSocket.close();
+                            } catch (IOException ex) {
+                                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         }
                     }
+                    
                     lockAndWait.notifyAll();
                 }
             });
 
-            lockAndWait.wait(1000);
+            synchronized (lockAndWait) {
+                lockAndWait.wait(1000);
+            }
             System.out.println("Connection received from " + clientSocket.getInetAddress());
             String input = in.readLine();
             System.out.println("input: " + input);
