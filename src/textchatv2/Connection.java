@@ -355,7 +355,9 @@ public class Connection {
      * @param receiverCallback the receiverCallback to set
      */
     public void setReceiverCallback(Runnable receiverCallback) {
-        if (receiverCallback == null) {
+        System.out.println("Setting receiver");
+        if (this.receiverThread == null) {
+            System.out.println("creating receiver");
             this.receiverThread = receiverCallback;
             Thread listener = new Thread(receiverCallback);
             listener.setDaemon(true);
