@@ -75,6 +75,8 @@ public class ChatController implements Initializable {
     }
 
     private void receiveText(String data) {
+        System.out.println("RECEIVING " + data);
+        System.out.println("SECURITY: " + this.securitySolution);
         String message = this.securitySolution.startDecryption(data.getBytes());
         showText(message, false);
     }

@@ -122,6 +122,7 @@ public class Connection {
                             this.getClientConnection().getInputStream()));
             String data = in.readLine();
             System.out.println("received: " + data);
+            return data;
 
         } catch (IOException ex) {
            ex.printStackTrace();
