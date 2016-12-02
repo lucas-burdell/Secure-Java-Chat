@@ -80,11 +80,15 @@ public class Connection {
         System.out.println("Received public: " + magic);
         //BigInteger otherPublic = BigInteger.valueOf(magic);
         this.sharedSecret = repeatedSquaring(magic, privateNumber, generator);
+        System.out.println("secret: " + this.sharedSecret);
         //System.out.println("secret powered: " + otherPublic.pow(privateNumber.intValueExact()).toString());
         this.publicNumber = repeatedSquaring(prime, privateNumber, generator);
         System.out.println("My public: " + publicNumber);
         try {
             PrintWriter writer = new PrintWriter(clientConnection.getOutputStream());
+            byte[] publicArray = publicNumber.toByteArray();
+            writer.println(publicArray.length);
+            writer.flush();
             clientConnection.getOutputStream().write(publicNumber.toByteArray());
             clientConnection.getOutputStream().flush();
             //writer.println("" + publicNumber.toByteArray());
@@ -118,6 +122,7 @@ public class Connection {
             int publicSize = Integer.parseInt(sizeString);
 
             //int magic = Integer.parseInt(in.readLine());
+            System.out.println("awaiting bytes");
             publicBytes = new byte[publicSize];
             clientConnection.getInputStream().read(publicBytes);
             BigInteger receivedPublic = new BigInteger(publicBytes);
@@ -125,6 +130,7 @@ public class Connection {
 
             //output.sharedSecret = otherPublic.pow(output.privateNumber.intValueExact()).mod(output.generator);
             this.setSharedSecret(repeatedSquaring(receivedPublic, privateNumber, generator));
+            System.out.println("secret: " + this.getSharedSecret());
             //this.setSharedSecret((int) (Math.pow(receivedPublic, this.getPrivateNumber()) % this.getGenerator()));
             this.setConnectionEstablished(true);
             return true;
