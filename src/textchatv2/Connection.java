@@ -105,6 +105,8 @@ public class Connection {
         try {
             PrintWriter writer = new PrintWriter(this.getClientConnection().getOutputStream());
             writer.println(message);
+            writer.flush();
+            System.out.println("sending: " + message);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -112,12 +114,14 @@ public class Connection {
     }
 
     public String getMessage() {
+        System.out.println("Waiting to receive...");
         BufferedReader in = null;
         try {
             in = new BufferedReader(
                     new InputStreamReader(
                             this.getClientConnection().getInputStream()));
-            return in.readLine();
+            String data = in.readLine();
+            System.out.println("received: " + data);
 
         } catch (IOException ex) {
            ex.printStackTrace();
