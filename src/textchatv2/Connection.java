@@ -98,6 +98,7 @@ public class Connection {
             System.out.println("DH exchanged failed. TODO: panic");
         }
         this.setConnectionEstablished(true);
+        MainApplication.getApplication().startChatGui(this);
     }
 
     //start the key transfer to the server
@@ -193,6 +194,7 @@ public class Connection {
                 while (!server.isClosed()) {
                     try {
                         Socket clientSocket = server.accept();
+
                         Thread thread = new Thread(new ClientHandler(clientSocket));
                         thread.setDaemon(true);
                         thread.start();
@@ -311,5 +313,24 @@ public class Connection {
      */
     private void setConnectionEstablished(boolean connectionEstablished) {
         this.connectionEstablished = connectionEstablished;
+    }
+
+    /**
+     * @return the receiverCallback
+     */
+    public Runnable getReceiverCallback() {
+        return receiverCallback;
+    }
+
+    /**
+     * @param receiverCallback the receiverCallback to set
+     */
+    public void setReceiverCallback(Runnable receiverCallback) {
+        if (receiverCallback == null) {
+            this.receiverCallback = receiverCallback;
+            Thread listener = new Thread(receiverCallback);
+            listener.setDaemon(true);
+            listener.start();
+        }
     }
 }

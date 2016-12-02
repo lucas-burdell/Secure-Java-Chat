@@ -6,9 +6,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 
 /**
  *
@@ -29,6 +33,15 @@ public class ClientHandler implements Runnable {
                 = new PrintWriter(clientSocket.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(clientSocket.getInputStream()));) {
+            
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+                        alert.setTitle("Incoming from " + clientSocket.getInetAddress());
+                        alert.setContentText("Connection from " + clientSocket.getInetAddress() + ". Accept?");
+                        Optional<ButtonType> alertResult = alert.showAndWait();
+                        if (alertResult.isPresent() && alertResult.get() != ButtonType.OK) {
+                            clientSocket.close();
+                            return;
+                        }
             System.out.println("Connection received from " + clientSocket.getInetAddress());
             String input = in.readLine();
             System.out.println("input: " + input);
