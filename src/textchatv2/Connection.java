@@ -89,7 +89,7 @@ public class Connection {
             byte[] publicArray = publicNumber.toByteArray();
             writer.println(publicArray.length);
             writer.flush();
-            clientConnection.getOutputStream().write(publicNumber.toByteArray());
+            clientConnection.getOutputStream().write(publicArray);
             clientConnection.getOutputStream().flush();
             //writer.println("" + publicNumber.toByteArray());
             //writer.flush();
@@ -122,7 +122,7 @@ public class Connection {
             int publicSize = Integer.parseInt(sizeString);
 
             //int magic = Integer.parseInt(in.readLine());
-            System.out.println("awaiting bytes");
+            System.out.println("awaiting " + publicSize + " bytes");
             publicBytes = new byte[publicSize];
             clientConnection.getInputStream().read(publicBytes);
             BigInteger receivedPublic = new BigInteger(publicBytes);
