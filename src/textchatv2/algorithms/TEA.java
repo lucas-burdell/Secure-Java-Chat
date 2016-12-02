@@ -27,6 +27,7 @@ public class TEA extends SecuritySolution {
             int position = i * 4;
             bigKey[i] = new BigInteger(new byte[]{key[position],
                 key[position + 1], key[position + 2], key[position + 3]}).abs();
+            System.out.println(bigKey[i]);
         }
         for (int i = 0; i < chopped.length; i++) {
             decrypt(chopped[i], bigKey);
