@@ -100,7 +100,7 @@ public class Connection {
         this.setConnectionEstablished(true);
         MainApplication.getApplication().startChatGui(this);
     }
-    
+
     public void sendMessage(String message) {
         try {
             PrintWriter writer = new PrintWriter(this.getClientConnection().getOutputStream());
@@ -108,7 +108,7 @@ public class Connection {
         } catch (IOException ex) {
             Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 
     public String getMessage() {
@@ -118,7 +118,7 @@ public class Connection {
                     new InputStreamReader(
                             this.getClientConnection().getInputStream()));
             return in.readLine();
-            
+
         } catch (IOException ex) {
             Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -129,7 +129,8 @@ public class Connection {
     private boolean startTransfer() {
         // try-with-resources can't catch implicit IOException on close() method
         // of stream, so you need the catch clause
-        try (PrintWriter writer = new PrintWriter(clientConnection.getOutputStream())) {
+        try {
+            PrintWriter writer = new PrintWriter(clientConnection.getOutputStream());
             byte[] publicBytes = publicNumber.toByteArray();
             writer.println(algorithm + " " + publicBytes.length);
             writer.flush();
