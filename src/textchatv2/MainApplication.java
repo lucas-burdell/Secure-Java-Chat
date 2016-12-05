@@ -1,6 +1,7 @@
 package textchatv2;
 
 import java.io.IOException;
+import java.util.Random;
 import java.util.Scanner;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -16,7 +17,7 @@ import javafx.stage.Stage;
  * @author lucas.burdell
  */
 public class MainApplication extends Application {
-    
+
     private static MainApplication application;
 
     /**
@@ -32,30 +33,30 @@ public class MainApplication extends Application {
     public static void setApplication(MainApplication aApplication) {
         application = aApplication;
     }
-    
 
     public void startChatGui(Connection connection) {
-        
+
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    startChatGui(connection); 
-               }
+                    startChatGui(connection);
+                }
             });
         } else {
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader();
                 Pane p = fxmlLoader.load(MainApplication.class.getResourceAsStream("Chat.fxml"));
                 ChatController controller = (ChatController) fxmlLoader.getController();
-                controller.setConnection(connection, 
+                controller.setConnection(connection,
                         SecuritySuite.getSecuritySolution(
-                                connection.getAlgorithm(), 
+                                connection.getAlgorithm(),
                                 connection.getSharedSecret().toByteArray()));
-                
+
                 Stage stage = new Stage();
                 stage.setScene(new Scene(p));
                 stage.setTitle(connection.getClientConnection().getInetAddress().toString());
+                controller.setStage(stage);
                 stage.show();
                 //throw new IOException();
             } catch (IOException ioe) {
@@ -69,13 +70,19 @@ public class MainApplication extends Application {
         }
     }
 
+    public static byte[] randomBytes(int num) {
+        byte[] output = new byte[num];
+        Random random = new Random();
+        random.nextBytes(output);
+        return output;
+    }
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException {
         Connection.startServer(12345);
         Application.launch(args);
-
     }
 
     @Override
@@ -87,7 +94,7 @@ public class MainApplication extends Application {
         primaryStage.setScene(primaryScene);
         primaryStage.setTitle("Connections");
         primaryStage.show();
-        
+
         //ChatController fooController = (ChatController) fxmlLoader.getController();
 
         /*
@@ -95,7 +102,7 @@ public class MainApplication extends Application {
         Pane p = fxmlLoader.load(TextChat.class.getResource("Chat.fxml").openStream());
         ChatController fooController = (ChatController) fxmlLoader.getController();
          */
-        /*
+ /*
         Scanner scanner = new Scanner(System.in);
         System.out.println("connecting?");
         if (scanner.nextBoolean()) {
@@ -107,7 +114,7 @@ public class MainApplication extends Application {
         } else {
             Connection.startServer(12345);
         }
-        */
+         */
     }
 
 }

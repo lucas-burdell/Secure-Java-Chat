@@ -17,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -35,6 +36,8 @@ public class ChatController implements Initializable {
     private TextField texttemplate;
 
     private Connection connection;
+
+    private Stage stage;
 
     private SecuritySolution securitySolution;
 
@@ -64,13 +67,11 @@ public class ChatController implements Initializable {
         showText(textToSend, true);
         byte[] message = this.securitySolution.startEncryption(textToSend);
         this.connection.sendMessage(message);
-        
 
 // do something with it
-                // byte[] ciphertext = encrypt(textToSend) : encrypt the text
-                // connection.send(ciphertext) : send the ciphertext
-                // show(textToSend)  : show text we sent on our screen as "You: " + text
-
+        // byte[] ciphertext = encrypt(textToSend) : encrypt the text
+        // connection.send(ciphertext) : send the ciphertext
+        // show(textToSend)  : show text we sent on our screen as "You: " + text
     }
 
     private void receiveText(byte[] data) {
@@ -87,7 +88,6 @@ public class ChatController implements Initializable {
         return connection;
     }
 
-
     public void setConnection(Connection connection, SecuritySolution securitySolution) {
         this.connection = connection;
         this.securitySolution = securitySolution;
@@ -97,18 +97,38 @@ public class ChatController implements Initializable {
                 System.out.println("Beginning to listen");
                 System.out.println("connection is closed?: " + connection.getClientConnection().isClosed());
                 while (!connection.getClientConnection().isClosed()) {
-                    byte[] data = connection.getMessage();
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            receiveText(data);
-                        }
+                    byte[] data;
+                    try {
+                        data = connection.getMessage();
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                receiveText(data);
+                            }
 
-                    });
+                        });
+                    } catch (IOException ex) {
+                        getStage().close();
+                    }
+
                 }
             }
 
         });
 
+    }
+
+    /**
+     * @return the stage
+     */
+    public Stage getStage() {
+        return stage;
+    }
+
+    /**
+     * @param stage the stage to set
+     */
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 }

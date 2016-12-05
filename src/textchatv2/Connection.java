@@ -49,7 +49,6 @@ public class Connection {
 
     private ArrayDeque<byte[]> messages = new ArrayDeque<>();
     private Thread senderThread;
-    
 
     //from http://stackoverflow.com/questions/4582277/biginteger-powbiginteger
     public final BigInteger repeatedSquaring(BigInteger base, BigInteger exponent, BigInteger modulus) {
@@ -107,7 +106,7 @@ public class Connection {
         this.setConnectionEstablished(true);
         MainApplication.getApplication().startChatGui(this);
     }
-    
+
     public void sendMessage(byte[] message) {
         messages.addLast(message);
     }
@@ -125,24 +124,18 @@ public class Connection {
         }
     }
 
-    public byte[] getMessage() {
+    public byte[] getMessage() throws IOException {
         System.out.println("Waiting to receive...");
         BufferedReader in = null;
-        try {
-            in = new BufferedReader(
-                    new InputStreamReader(
-                            this.getClientConnection().getInputStream()));
-            String dataSize = in.readLine();
-            int size = Integer.parseInt(dataSize);
-            System.out.println("received size: " + dataSize);
-            byte[] data = new byte[size];
-            this.getClientConnection().getInputStream().read(data);
-            return data;
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return null;
+        in = new BufferedReader(
+                new InputStreamReader(
+                        this.getClientConnection().getInputStream()));
+        String dataSize = in.readLine();
+        int size = Integer.parseInt(dataSize);
+        System.out.println("received size: " + dataSize);
+        byte[] data = new byte[size];
+        this.getClientConnection().getInputStream().read(data);
+        return data;
     }
     //start the key transfer to the server
 

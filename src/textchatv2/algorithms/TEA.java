@@ -273,7 +273,7 @@ public class TEA extends SecuritySolution {
                     data[start + 7]};
                 long left = bytesToLong(data);
                 long right;
-                start = start + 4;
+                start = start + 8;
                 byte[] rightBytes = new byte[data.length - start];
 
                 for (int i = 0; i < data.length - start; i++) {
