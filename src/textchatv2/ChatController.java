@@ -61,9 +61,9 @@ public class ChatController implements Initializable {
     @FXML
     private void sendText(ActionEvent event) {
         String textToSend = textbox.getText();
+        showText(textToSend, true);
         byte[] message = this.securitySolution.startEncryption(textToSend);
         this.connection.sendMessage(message);
-        showText(textToSend, true);
         
 
 // do something with it
