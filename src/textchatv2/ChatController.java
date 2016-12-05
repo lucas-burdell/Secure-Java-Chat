@@ -108,7 +108,7 @@ public class ChatController implements Initializable {
 
                         });
                     } catch (IOException ex) {
-                        getStage().close();
+                        Platform.exit();
                     }
 
                 }
