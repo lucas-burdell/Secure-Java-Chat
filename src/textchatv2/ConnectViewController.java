@@ -12,15 +12,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 
-/**
- *
- * @author lucas.burdell
- */
 public class ConnectViewController implements Initializable {
 
     @FXML
@@ -32,17 +27,12 @@ public class ConnectViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
-        // code snippet from 
-        // http://stackoverflow.com/questions/21374214/get-toggle-radiobutton-user-value
-        
         algorithms.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
             @Override
             public void changed(ObservableValue<? extends Toggle> ov, 
                     Toggle oldValue, Toggle newValue) {
                 selectedAlgorithm = algorithms.getToggles().indexOf(
                         algorithms.getSelectedToggle());
-
             }
         });
     }
@@ -66,5 +56,4 @@ public class ConnectViewController implements Initializable {
             ipbox.setText("");
         }
     }
-
 }

@@ -1,16 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package textchatv2.algorithms;
 
 import textchatv2.SecuritySolution;
 
-/**
- *
- * @author lucas.burdell
- */
 public class RC4 extends SecuritySolution {
 
     private byte[] S = new byte[256];
@@ -23,33 +14,26 @@ public class RC4 extends SecuritySolution {
     public void setKey(byte[] key) {
         super.setKey(key);
         N = key.length;
-
         for (i = 0; i < 256; i++) {
             S[i] = (byte) i;
             K[i] = key[intMod(i, N)];
 
         }
-
         j = 0;
         byte swap;
-
         for (i = 0; i < 256; i++) {
-            System.out.println("init " + i);
             j = intMod((j + (S[i]) + (K[i])), 256);
-            System.out.println("result: " + j);
             swap(S, i, j);
         }
         i = j = 0;
     }
 
     public int intMod(int i, int mod) {
-
         int out = i % mod;
         if (out < 0) {
             out += mod;
         }
         return out;
-
     }
 
     @Override
@@ -95,5 +79,4 @@ public class RC4 extends SecuritySolution {
         }
         return new String(output);
     }
-
 }

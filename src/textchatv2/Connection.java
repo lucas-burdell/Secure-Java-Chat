@@ -364,26 +364,21 @@ public class Connection {
      * @param receiverCallback the receiverCallback to set
      */
     public void setReceiverCallback(Runnable receiverCallback) {
-        System.out.println("Setting receiver");
         if (this.receiverThread == null) {
-            System.out.println("creating receiver");
             this.receiverThread = receiverCallback;
             Thread listener = new Thread(receiverCallback);
             listener.setDaemon(true);
             listener.start();
         }
-        this.senderThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (!Connection.this.getClientConnection().isClosed()) {
-                    if (!messages.isEmpty()) {
-                        byte[] message = messages.pollFirst();
-                        Connection.this.send(message);
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+        this.senderThread = new Thread(() -> {
+            while (!Connection.this.getClientConnection().isClosed()) {
+                if (!messages.isEmpty()) {
+                    byte[] message = messages.pollFirst();
+                    Connection.this.send(message);
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }

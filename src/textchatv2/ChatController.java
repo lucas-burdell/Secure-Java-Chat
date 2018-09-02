@@ -1,12 +1,8 @@
 package textchatv2;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,11 +15,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
-/**
- * FXML Controller class
- *
- * @author lucas.burdell
- */
 public class ChatController implements Initializable {
 
     @FXML
@@ -41,13 +32,8 @@ public class ChatController implements Initializable {
 
     private SecuritySolution securitySolution;
 
-    /**
-     * Initializes the controller class.
-     */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-
-    }
+    public void initialize(URL url, ResourceBundle rb) { }
 
     private void showText(String content, boolean sending) {
         Color textColor = sending ? Color.GREEN : Color.BLUE;
@@ -67,23 +53,13 @@ public class ChatController implements Initializable {
         showText(textToSend, true);
         byte[] message = this.securitySolution.startEncryption(textToSend);
         this.connection.sendMessage(message);
-
-// do something with it
-        // byte[] ciphertext = encrypt(textToSend) : encrypt the text
-        // connection.send(ciphertext) : send the ciphertext
-        // show(textToSend)  : show text we sent on our screen as "You: " + text
     }
 
     private void receiveText(byte[] data) {
-        System.out.println("RECEIVING " + data);
-        System.out.println("SECURITY: " + this.securitySolution);
         String message = this.securitySolution.startDecryption(data);
         showText(message, false);
     }
 
-    /**
-     * @return the connection
-     */
     public Connection getConnection() {
         return connection;
     }
@@ -91,31 +67,20 @@ public class ChatController implements Initializable {
     public void setConnection(Connection connection, SecuritySolution securitySolution) {
         this.connection = connection;
         this.securitySolution = securitySolution;
-        connection.setReceiverCallback(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("Beginning to listen");
-                System.out.println("connection is closed?: " + connection.getClientConnection().isClosed());
-                while (!connection.getClientConnection().isClosed()) {
-                    byte[] data;
-                    try {
-                        data = connection.getMessage();
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                receiveText(data);
-                            }
-
-                        });
-                    } catch (IOException ex) {
-                        Platform.exit();
-                    }
-
+        connection.setReceiverCallback(() -> {
+            while (!connection.getClientConnection().isClosed()) {
+                byte[] data;
+                try {
+                    data = connection.getMessage();
+                    Platform.runLater(() -> {
+                        receiveText(data);
+                    });
+                } catch (IOException ex) {
+                    Platform.exit();
                 }
+                
             }
-
         });
-
     }
 
     /**
